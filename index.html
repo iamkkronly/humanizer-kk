@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title> Rayflix AI Text Humanizer </title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #111;
+      color: #eee;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+    h1 {
+      color: #00ffc8;
+    }
+    textarea, button {
+      width: 90%;
+      max-width: 700px;
+      margin: 1rem 0;
+      font-size: 1rem;
+      padding: 12px;
+      border-radius: 8px;
+      border: none;
+    }
+    button {
+      background-color: #00ffc8;
+      color: #000;
+      cursor: pointer;
+    }
+    #output {
+      background: #222;
+      padding: 15px;
+      border-radius: 10px;
+      white-space: pre-wrap;
+      max-width: 700px;
+      width: 90%;
+    }
+  </style>
+</head>
+<body>
+  <h1> Rayflix AI Text Humanizer </h1>
+  <textarea id="input" placeholder="Paste your robotic AI text here..."></textarea>
+  <button onclick="humanize()">Humanize It</button>
+  <div id="output">Result will show up here...</div>
+
+  <script>
+    const API_KEY = 'AIzaSyAgIPiDW0xo05XEX1De4VWVYJmWCOWartU';
+
+    async function humanize() {
+      const input = document.getElementById("input").value;
+      const outputDiv = document.getElementById("output");
+      outputDiv.textContent = "Humanizing...";
+
+      const body = {
+        contents: [
+          {
+            parts: [
+              {
+                text: `Convert this AI-sounding text into something more natural, casual, and human-sounding:\n\n"${input}"`
+              }
+            ]
+          }
+        ]
+      };
+
+      try {
+        const res = await fetch(
+          'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + API_KEY,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(body)
+          }
+        );
+
+        const data = await res.json();
+        const humanText = data.candidates?.[0]?.content?.parts?.[0]?.text || "Bhai kuch error aagaya... Check API key or usage.";
+
+        outputDiv.textContent = humanText;
+      } catch (err) {
+        outputDiv.textContent = "Network ya API error bhai... Try again!";
+        console.error(err);
+      }
+    }
+  </script>
+</body>
+</html>
